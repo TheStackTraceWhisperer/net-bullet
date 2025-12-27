@@ -44,3 +44,68 @@ jobs:
         path: |
           **/target/surefire-reports/
           **/target/failsafe-reports/
+          
+    - name: Upload Code Coverage Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: jacoco-report
+        path: target/site/jacoco/
+        
+    - name: Upload Checkstyle Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: checkstyle-report
+        path: target/checkstyle-result.xml
+        
+    - name: Upload PMD Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: pmd-report
+        path: |
+          target/pmd.xml
+          target/cpd.xml
+          
+    - name: Upload SpotBugs Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: spotbugs-report
+        path: target/spotbugsXml.xml
+        
+    - name: Comment Quality Summary on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          let comment = '## 🔍 Quality Control Summary\n\n';
+          
+          // Add summary of quality checks
+          comment += '### Checks Performed\n';
+          comment += '- ✅ Checkstyle: Code style enforcement\n';
+          comment += '- ✅ PMD: Code quality analysis\n';
+          comment += '- ✅ SpotBugs: Bug detection\n';
+          comment += '- ✅ JaCoCo: Code coverage measurement\n';
+          comment += '- ✅ Unit Tests: Functional correctness\n';
+          comment += '- ✅ Integration Tests: End-to-end validation\n\n';
+          
+          comment += '### 📊 Reports Available\n';
+          comment += 'Download artifacts from the Actions tab to view detailed reports:\n';
+          comment += '- **Test Results**: Unit and integration test reports\n';
+          comment += '- **Code Coverage**: JaCoCo coverage report\n';
+          comment += '- **Checkstyle**: Code style violations\n';
+          comment += '- **PMD**: Code quality issues\n';
+          comment += '- **SpotBugs**: Potential bugs\n\n';
+          
+          comment += '### 📚 Documentation\n';
+          comment += 'See [QUALITY_METRICS.md](../blob/main/QUALITY_METRICS.md) for details on quality standards.\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
