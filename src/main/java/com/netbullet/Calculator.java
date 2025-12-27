@@ -8,8 +8,10 @@ public class Calculator {
     /**
      * Adds two integers.
      *
-     * @param a first number
-     * @param b second number
+     * @param a
+     *            first number
+     * @param b
+     *            second number
      * @return sum of a and b
      */
     public int add(int a, int b) {
@@ -19,8 +21,10 @@ public class Calculator {
     /**
      * Subtracts second integer from first.
      *
-     * @param a first number
-     * @param b second number
+     * @param a
+     *            first number
+     * @param b
+     *            second number
      * @return difference of a and b
      */
     public int subtract(int a, int b) {
@@ -30,8 +34,10 @@ public class Calculator {
     /**
      * Multiplies two integers.
      *
-     * @param a first number
-     * @param b second number
+     * @param a
+     *            first number
+     * @param b
+     *            second number
      * @return product of a and b
      */
     public int multiply(int a, int b) {
@@ -41,10 +47,13 @@ public class Calculator {
     /**
      * Divides first integer by second.
      *
-     * @param a dividend
-     * @param b divisor
+     * @param a
+     *            dividend
+     * @param b
+     *            divisor
      * @return quotient of a divided by b
-     * @throws ArithmeticException if b is zero
+     * @throws ArithmeticException
+     *             if b is zero
      */
     public int divide(int a, int b) {
         if (b == 0) {

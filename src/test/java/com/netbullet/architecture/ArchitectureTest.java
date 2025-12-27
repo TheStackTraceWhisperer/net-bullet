@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 /**
- * Architecture tests to enforce structural rules and best practices.
- * These tests prevent architectural violations at build time.
+ * Architecture tests to enforce structural rules and best practices. These
+ * tests prevent architectural violations at build time.
  */
 class ArchitectureTest {
 
@@ -18,7 +18,8 @@ class ArchitectureTest {
 
     @Test
     void classesShouldNotUseJavaUtilLogging() {
-        // Enforce use of a proper logging framework (e.g., SLF4J) instead of java.util.logging
+        // Enforce use of a proper logging framework (e.g., SLF4J) instead of
+        // java.util.logging
         ArchRule rule = noClasses()
                 .should().dependOnClassesThat().resideInAPackage("java.util.logging..");
 
