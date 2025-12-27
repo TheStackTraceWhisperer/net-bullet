@@ -29,3 +29,17 @@ buildNumber.properties
 # Test reports
 *.log
 test-output/
+
+# Quality reports
+.checkstyle
+.pmd
+dependency-check-report.html
+dependency-check-report.json
+
+# JaCoCo
+jacoco.exec
+
+# Maven Wrapper
+.mvn/
+mvnw
+mvnw.cmd
