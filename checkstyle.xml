@@ -101,9 +101,7 @@
 
         <!-- Javadoc comments -->
         <module name="JavadocMethod">
-            <property name="scope" value="public"/>
-            <property name="allowMissingParamTags" value="false"/>
-            <property name="allowMissingReturnTag" value="false"/>
+            <property name="accessModifiers" value="public"/>
         </module>
         <module name="JavadocType">
             <property name="scope" value="public"/>
