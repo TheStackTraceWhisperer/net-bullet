@@ -33,8 +33,6 @@ test-output/
 # Quality reports
 .checkstyle
 .pmd
-dependency-check-report.html
-dependency-check-report.json
 
 # JaCoCo
 jacoco.exec

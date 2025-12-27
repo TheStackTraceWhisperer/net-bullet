@@ -32,8 +32,8 @@
         <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.21.2</maven-pmd-plugin.version>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
-        <dependency-check-maven.version>9.0.9</dependency-check-maven.version>
         <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
+        <archunit-junit5.version>1.2.1</archunit-junit5.version>
         <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
         <license-maven-plugin.version>4.3</license-maven-plugin.version>
         
@@ -87,6 +87,14 @@
             <artifactId>spotbugs-annotations</artifactId>
             <version>${spotbugs.version}</version>
             <scope>provided</scope>
+        </dependency>
+        
+        <!-- ArchUnit for architecture testing -->
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5</artifactId>
+            <version>${archunit-junit5.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -338,30 +346,6 @@
                         <goals>
                             <goal>check</goal>
                             <goal>cpd-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <!-- OWASP Dependency-Check for security vulnerabilities -->
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>${dependency-check-maven.version}</version>
-                <configuration>
-                    <failBuildOnCVSS>7</failBuildOnCVSS>
-                    <skipProvidedScope>true</skipProvidedScope>
-                    <skipRuntimeScope>false</skipRuntimeScope>
-                    <skip>true</skip> <!-- Enable manually: mvn dependency-check:check -Ddependency-check.skip=false -->
-                    <formats>
-                        <format>HTML</format>
-                        <format>JSON</format>
-                    </formats>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>

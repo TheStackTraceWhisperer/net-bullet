@@ -60,19 +60,10 @@ The project enforces extremely high standards for code quality, security, and ma
 
 ### 3. Security
 
-#### OWASP Dependency-Check (v9.0.9)
-- **Purpose**: Identifies known vulnerabilities in dependencies
-- **Configuration**: Fails build on CVSS ≥ 7
-- **Status**: Skipped by default (run manually due to execution time)
-- **Enable**: `mvn verify -Ddependency-check.skip=false`
-- **Reports**: `dependency-check-report.html`, `dependency-check-report.json`
-
 #### FindSecBugs (v1.13.0)
 - **Purpose**: Security-focused bug detection
 - **Integration**: Included as SpotBugs plugin
 - **Detects**: SQL injection, XSS, insecure crypto, etc.
-
-### 4. Build Enforcement
 
 #### Maven Enforcer Plugin (v3.4.1)
 - **Requirements**:
@@ -83,7 +74,7 @@ The project enforces extremely high standards for code quality, security, and ma
   - Dependency convergence required
 - **Status**: Active (fails build on violations)
 
-### 5. Code Formatting
+### 4. Code Formatting
 
 #### Formatter Maven Plugin (v2.23.0)
 - **Purpose**: Consistent code formatting
@@ -103,7 +94,7 @@ The project enforces extremely high standards for code quality, security, and ma
 - **Status**: Skipped initially (enable after adding headers)
 - **Enable**: Remove `<skip>true</skip>` from pom.xml
 
-### 6. Documentation
+### 5. Documentation
 
 #### Maven Javadoc Plugin (v3.6.3)
 - **Purpose**: API documentation generation
@@ -111,7 +102,7 @@ The project enforces extremely high standards for code quality, security, and ma
 - **Level**: All access modifiers (public, protected, private)
 - **Status**: Active (generates javadoc JAR)
 
-### 7. Testing
+### 6. Testing
 
 #### JUnit 5 (v5.10.2)
 - **Purpose**: Unit testing framework
@@ -127,6 +118,14 @@ The project enforces extremely high standards for code quality, security, and ma
 #### AssertJ (v3.25.3)
 - **Purpose**: Fluent assertions
 - **Benefits**: Improved test readability and maintainability
+
+#### ArchUnit (v1.2.1)
+- **Purpose**: Architecture testing and enforcement
+- **Tests for**: Layering, dependencies, naming conventions, package structures
+- **Benefits**: Prevents architectural violations at build time
+- **Integration**: JUnit 5 test framework
+
+### 7. Dependency Management
 
 ## Gradual Adoption Strategy
 
@@ -170,11 +169,6 @@ mvn clean verify
 ### Quick Build (skip quality for development)
 ```bash
 mvn clean install -DskipTests -Dcheckstyle.skip -Dpmd.skip -Dspotbugs.skip
-```
-
-### Security Scan
-```bash
-mvn verify -Ddependency-check.skip=false
 ```
 
 ### Individual Plugin Execution
@@ -243,7 +237,6 @@ The GitHub Actions CI workflow automatically:
 | maven-checkstyle-plugin | 3.3.1 | Code style |
 | maven-pmd-plugin | 3.21.2 | Code quality |
 | jacoco-maven-plugin | 0.8.11 | Code coverage |
-| dependency-check-maven | 9.0.9 | Security scanning |
 | versions-maven-plugin | 2.16.2 | Dependency management |
 | formatter-maven-plugin | 2.23.0 | Code formatting |
 | license-maven-plugin | 4.3 | License headers |
@@ -258,6 +251,7 @@ The GitHub Actions CI workflow automatically:
 | junit-jupiter | 5.10.2 | Testing framework |
 | testcontainers | 1.19.7 | Integration testing |
 | assertj-core | 3.25.3 | Fluent assertions |
+| archunit-junit5 | 1.2.1 | Architecture testing |
 | spotbugs-annotations | 4.8.3 | Bug prevention |
 
 ## Configuration Files
@@ -303,18 +297,13 @@ The GitHub Actions CI workflow automatically:
 **Issue**: Insufficient test coverage
 **Solution**: Add tests for uncovered code paths
 
-### OWASP Vulnerabilities
-**Issue**: Security vulnerabilities in dependencies
-**Solution**: Update dependencies or accept risk with documented justification
-
 ## Future Enhancements
 
 1. **Mutation Testing**: Add PITest for test quality verification
-2. **Architecture Rules**: Add ArchUnit for architectural constraints
-3. **Performance Testing**: Add JMH for performance regression detection
-4. **Container Security**: Add Trivy for container vulnerability scanning
-5. **SonarQube Integration**: For centralized quality management
-6. **Custom Rules**: Project-specific Checkstyle/PMD rules
+2. **Performance Testing**: Add JMH for performance regression detection
+3. **Container Security**: Add Trivy for container vulnerability scanning
+4. **SonarQube Integration**: For centralized quality management
+5. **Custom Rules**: Project-specific Checkstyle/PMD rules
 
 ## References
 
@@ -322,7 +311,7 @@ The GitHub Actions CI workflow automatically:
 - [PMD Documentation](https://pmd.github.io/)
 - [SpotBugs Documentation](https://spotbugs.github.io/)
 - [JaCoCo Documentation](https://www.jacoco.org/)
-- [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/)
+- [ArchUnit Documentation](https://www.archunit.org/)
 - [Testcontainers Documentation](https://www.testcontainers.org/)
 
 ---

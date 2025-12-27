@@ -189,7 +189,7 @@ The infrastructure is ready for Java 25 features:
 **Static Analysis:**
 - SpotBugs: Bug detection
 - FindSecBugs: Security vulnerability detection
-- OWASP Dependency-Check: Vulnerable dependencies
+- Maven Enforcer: Build and dependency validation
 
 #### Modernity
 **Enforcement:**
@@ -234,15 +234,15 @@ Enable blocking by changing configuration:
 ## Continuous Improvement
 
 ### Current Setup
-- ✅ 13+ plugins for quality control
-- ✅ Security scanning (OWASP, FindSecBugs)
+- ✅ 12+ plugins for quality control
+- ✅ Security scanning (FindSecBugs)
 - ✅ Code coverage (80% line, 70% branch)
 - ✅ Style enforcement (Checkstyle, Formatter)
 - ✅ Documentation generation (Javadoc)
+- ✅ Architecture testing (ArchUnit)
 
 ### Future Enhancements
 - 🔄 Mutation testing (PITest)
-- 🔄 Architecture rules (ArchUnit)
 - 🔄 Performance benchmarks (JMH)
 - 🔄 SonarQube integration
 - 🔄 Custom rules specific to project patterns

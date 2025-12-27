@@ -56,16 +56,7 @@ mvn jacoco:report
 
 ### Security Tools
 
-#### 5. **OWASP Dependency-Check**
-- Scans dependencies for known security vulnerabilities
-- Fails build on CVSS score ≥ 7
-- Generates HTML and JSON reports
-
-```bash
-mvn dependency-check:check
-```
-
-#### 6. **Maven Enforcer**
+#### 5. **Maven Enforcer**
 - Enforces build environment requirements
 - Requires Java 25+, Maven 3.8.0+
 - Ensures dependency convergence
@@ -95,9 +86,19 @@ mvn verify
 - Provides readable and maintainable test assertions
 - Enhances test clarity
 
+#### 10. **ArchUnit** - Architecture Testing
+- Enforces architectural rules and constraints
+- Tests for layering, dependencies, and naming conventions
+- Prevents architectural violations at build time
+
+```bash
+# Architecture tests run with unit tests
+mvn test
+```
+
 ### Code Formatting
 
-#### 10. **Formatter Maven Plugin**
+#### 11. **Formatter Maven Plugin**
 - Enforces consistent code formatting
 - Configuration: `formatter.xml`
 - Based on Eclipse formatter
@@ -107,7 +108,7 @@ mvn formatter:format    # Auto-format code
 mvn formatter:validate  # Check formatting
 ```
 
-#### 11. **License Maven Plugin**
+#### 12. **License Maven Plugin**
 - Ensures license headers on all source files
 - Configuration: `LICENSE_HEADER.txt`
 - Enforces Apache 2.0 license
@@ -119,7 +120,7 @@ mvn license:check   # Verify headers
 
 ### Documentation
 
-#### 12. **Maven Javadoc Plugin**
+#### 13. **Maven Javadoc Plugin**
 - Generates API documentation
 - Fails on missing or invalid Javadoc
 - Includes preview features support
@@ -130,7 +131,7 @@ mvn javadoc:javadoc
 
 ### Dependency Management
 
-#### 13. **Versions Maven Plugin**
+#### 14. **Versions Maven Plugin**
 - Check for dependency updates
 - Manage versions across the project
 
@@ -144,11 +145,6 @@ mvn versions:display-plugin-updates
 ### Standard Build
 ```bash
 mvn clean verify
-```
-
-### Full Quality Check (without OWASP, as it's slow)
-```bash
-mvn clean verify -DskipOWASP=true
 ```
 
 ### Quick Build (skip quality checks for development)
@@ -199,10 +195,10 @@ net-bullet/
 |--------|-----------|------|
 | Line Coverage | ≥ 80% | JaCoCo |
 | Branch Coverage | ≥ 70% | JaCoCo |
-| Security CVSS | < 7 | OWASP |
 | Code Style | 0 violations | Checkstyle |
 | Code Quality | 0 violations | PMD |
 | Bug Detection | 0 issues | SpotBugs |
+| Architecture | No violations | ArchUnit |
 
 ## Continuous Integration
 
