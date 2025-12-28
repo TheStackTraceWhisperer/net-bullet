@@ -35,10 +35,23 @@ public final class GameServer implements AutoCloseable {
 
     /**
      * Starts the server on the specified port.
+     * <p>
+     * The returned future completes successfully once the underlying Netty
+     * server channel has been bound. If binding fails for any reason
+     * (for example, the port is already in use or the process lacks
+     * sufficient privileges), the future is completed exceptionally with the
+     * cause reported by Netty and the server remains stopped.
+     * <p>
+     * This method is not idempotent and is intended to be called at most once
+     * per {@code GameServer} instance. Concurrent or repeated invocations are
+     * not supported and may result in additional bind attempts or resource
+     * leaks; callers should create a new {@code GameServer} instance if a
+     * restarted server is required.
      *
      * @param port
      *            the TCP port to bind to
-     * @return a future that completes when the server is bound
+     * @return a future that completes when the server is bound, or completes
+     *         exceptionally if the bind operation fails
      */
     public CompletableFuture<Void> start(int port) {
         this.bossGroup = bootstrapFactory.createEventLoopGroup(1, "boss");
