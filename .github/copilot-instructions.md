@@ -54,3 +54,13 @@ Before generating the final response, you must internally validate:
 ## 8. Development Lifecycle & Discipline
 - **Stop the Line:** If a bug is encountered (CI failure, Static Analysis warning), ALL feature work stops. The bug must be fixed immediately.
 - **Sanitation:** Never commit scaffolding, placeholders, or demonstration code (e.g., Calculator.java). Code must be production-intent from the first commit.
+
+## 9. Anti-Laziness & Definition of Done
+- **Implementation is Mandatory:** When asked to build a feature, you MUST generate the `.java` source files. Generating specifications, plans, or documentation *instead* of code is a failure.
+- **No Placeholders:** - `// TODO`, `// FIXME`, and `throw new UnsupportedOperationException()` are **BANNED**. 
+    - `// ... rest of code ...` elisions are **BANNED**. Always provide the FULL file content.
+- **Proof of Work:** You are not "Done" until you have:
+    1. Generated the Implementation (`.java`).
+    2. Generated the Test (`*Test.java`).
+    3. Verified it passes (`mvn clean verify`).
+- **Documentation is Secondary:** Documentation (README/Javadocs) is only allowed *after* the code compiles and passes tests.
