@@ -2,10 +2,22 @@
 
 A high-quality Java 25 project with industrial-grade quality control and testing infrastructure.
 
+## ⚠️ JAVA 25 REQUIRED
+
+**This project STRICTLY requires Java 25.** The build will fail on any earlier version.
+
+📚 **[Setup Guide](docs/SETUP.md)** - Complete Java 25 installation instructions for all platforms
+
 ## Prerequisites
 
-- Java 25 or higher
-- Maven 3.8.0 or higher
+- **Java 25 or higher** (MANDATORY - enforced by maven-enforcer-plugin)
+- Maven 3.9.9 or higher
+
+Quick verification:
+```bash
+java -version   # Must show "25"
+mvn -version    # Must show Maven 3.9.9+ AND Java version: 25
+```
 
 ## Quality Control Infrastructure
 

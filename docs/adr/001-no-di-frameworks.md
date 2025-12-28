@@ -2,6 +2,7 @@
 
 **Status:** ACCEPTED
 **Date:** 2025-12-28
+**Runtime:** Java 25
 **Context:** The `net-bullet` project targets "Industrial Grade" performance, sub-millisecond startup times, and zero "magic" behavior.
 
 ## The Decision
