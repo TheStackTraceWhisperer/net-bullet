@@ -68,19 +68,39 @@ public final class GameServer implements AutoCloseable {
                 });
 
         CompletableFuture<Void> startupFuture = new CompletableFuture<>();
-        b.bind(port).addListener((ChannelFuture future) -> {
-            if (future.isSuccess()) {
-                this.serverChannel = future.channel();
-                InetSocketAddress addr = (InetSocketAddress) serverChannel.localAddress();
-                LOG.info("GameServer started on port: {}", addr.getPort());
-                startupFuture.complete(null);
-            } else {
-                LOG.error("Failed to bind port {}", port, future.cause());
-                startupFuture.completeExceptionally(future.cause());
-            }
-        });
+        try {
+            b.bind(port).addListener((ChannelFuture future) -> {
+                if (future.isSuccess()) {
+                    this.serverChannel = future.channel();
+                    InetSocketAddress addr = (InetSocketAddress) serverChannel.localAddress();
+                    LOG.info("GameServer started on port: {}", addr.getPort());
+                    startupFuture.complete(null);
+                } else {
+                    LOG.error("Failed to bind port {}", port, future.cause());
+                    shutdownEventLoopGroupsOnStartFailure();
+                    startupFuture.completeExceptionally(future.cause());
+                }
+            });
+        } catch (RuntimeException e) {
+            LOG.error("Exception while binding to port {}", port, e);
+            shutdownEventLoopGroupsOnStartFailure();
+            startupFuture.completeExceptionally(e);
+        }
 
         return startupFuture;
+    }
+
+    /**
+     * Shuts down event loop groups when server startup fails.
+     * This is only used on start() failure paths to avoid leaking Netty threads.
+     */
+    private void shutdownEventLoopGroupsOnStartFailure() {
+        if (bossGroup != null) {
+            bossGroup.shutdownGracefully();
+        }
+        if (workerGroup != null) {
+            workerGroup.shutdownGracefully();
+        }
     }
 
     /**
