@@ -193,25 +193,33 @@ public final class GameServer implements AutoCloseable {
         LOG.info("Stopping GameServer...");
         CompletableFuture<Void> shutdownFuture = new CompletableFuture<>();
 
-        if (bossGroup != null && workerGroup != null) {
+        if (bossGroup != null || workerGroup != null) {
             CompletableFuture<Void> bossFuture = new CompletableFuture<>();
             CompletableFuture<Void> workerFuture = new CompletableFuture<>();
 
-            bossGroup.shutdownGracefully().addListener(future -> {
-                if (future.isSuccess()) {
-                    bossFuture.complete(null);
-                } else {
-                    bossFuture.completeExceptionally(future.cause());
-                }
-            });
+            if (bossGroup != null) {
+                bossGroup.shutdownGracefully().addListener(future -> {
+                    if (future.isSuccess()) {
+                        bossFuture.complete(null);
+                    } else {
+                        bossFuture.completeExceptionally(future.cause());
+                    }
+                });
+            } else {
+                bossFuture.complete(null);
+            }
 
-            workerGroup.shutdownGracefully().addListener(future -> {
-                if (future.isSuccess()) {
-                    workerFuture.complete(null);
-                } else {
-                    workerFuture.completeExceptionally(future.cause());
-                }
-            });
+            if (workerGroup != null) {
+                workerGroup.shutdownGracefully().addListener(future -> {
+                    if (future.isSuccess()) {
+                        workerFuture.complete(null);
+                    } else {
+                        workerFuture.completeExceptionally(future.cause());
+                    }
+                });
+            } else {
+                workerFuture.complete(null);
+            }
 
             CompletableFuture.allOf(bossFuture, workerFuture).whenComplete((v, t) -> {
                 if (t != null) {
