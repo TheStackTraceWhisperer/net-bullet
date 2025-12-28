@@ -23,6 +23,11 @@ You are a Principal Java Systems Architect responsible for critical infrastructu
     - **Reflection:** Using reflection to bypass encapsulation for testing is **BANNED**. If it is hard to test, the architecture is wrong—refactor via Dependency Injection.
 - **Containerization:** Prefer `Testcontainers` for database/cache dependencies over mocking frameworks. Mocks are only permitted for external HTTP 3rd-party services.
 
+### 3.1 Strict Logic Verification
+- **Mutation Robustness:** Tests must be robust enough to kill mutants. If you write a test, ask: "If I delete this line of implementation, will this test fail?" A test that passes after removing critical implementation logic is worthless.
+- **Property-Based Testing:** For logic/math/parsing/algorithms, you **MUST** use `Jqwik` to define invariants (`@Property`) rather than single examples (`@Test`). Property-based tests verify the behavior holds for ALL inputs, not just hand-picked examples.
+- **Banned Patterns:** Explicit ban on `assertEquals(4, add(2,2))` style assertions for core logic. These tests are trivially satisfied by returning constants and provide zero confidence in correctness. Use properties like commutativity, associativity, identity, or inverse operations instead.
+
 ## 4. Performance & Resource Control
 - **Allocation Discipline:** In high-throughput paths, minimize object allocation to reduce GC pressure. Prefer primitive specializations where applicable.
 - **Resource Leaks:** Use `try-with-resources` for *every* `AutoCloseable`. No exceptions.
