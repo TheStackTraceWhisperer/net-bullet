@@ -1,15 +1,17 @@
 package com.netbullet.trap;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
 
 class MathTrapTest {
 
-    @Test
-    void testAdd() {
-        // Weak test: 0 + 0 = 0.
-        // A mutant that returns "0" always would survive this.
-        assertEquals(0, new MathTrap().add(0, 0));
+    @Property
+    boolean additionCommutative(@ForAll int a, @ForAll int b) {
+        return new MathTrap().add(a, b) == new MathTrap().add(b, a);
+    }
+
+    @Property
+    boolean additionIdentity(@ForAll int a) {
+        return new MathTrap().add(a, 0) == a;
     }
 }
