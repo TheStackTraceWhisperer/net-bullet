@@ -64,3 +64,7 @@ Before generating the final response, you must internally validate:
     2. Generated the Test (`*Test.java`).
     3. Verified it passes (`mvn clean verify`).
 - **Documentation is Secondary:** Documentation (README/Javadocs) is only allowed *after* the code compiles and passes tests.
+
+## 10. Architecture Compliance
+- **Consult ADRs:** Before suggesting architectural changes or adding libraries, consult `docs/adr/`.
+- **Strict Compliance:** Explicitly respect **ADR 001 (No DI Frameworks)**. Do not suggest Spring, Guice, or Dagger.
