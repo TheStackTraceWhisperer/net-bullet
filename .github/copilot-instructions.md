@@ -45,3 +45,7 @@ Before generating the final response, you must internally validate:
 1.  **Completeness:** Is this code ready for production deployment immediately?
 2.  **Safety:** Have I removed all deprecated API calls?
 3.  **Modernity:** Am I utilizing Java 25 features effectively, or am I falling back on legacy patterns?
+
+## 8. Development Lifecycle & Discipline
+- **Stop the Line:** If a bug is encountered (CI failure, Static Analysis warning), ALL feature work stops. The bug must be fixed immediately.
+- **Sanitation:** Never commit scaffolding, placeholders, or demonstration code (e.g., Calculator.java). Code must be production-intent from the first commit.
