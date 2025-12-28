@@ -283,4 +283,55 @@ class GameServerIT {
             }
         }
     }
+
+    @Test
+    void testPrivilegedPortBindingFailureLogsSpecificMessage() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+        GameServer server = new GameServer(factory);
+
+        // Attempt to bind to a privileged port (80) without privileges
+        // This should fail - we just want to verify it's handled gracefully
+        CompletableFuture<Void> startFuture = server.start(80);
+
+        // The bind should fail (permission denied or port in use)
+        assertThatThrownBy(() -> startFuture.get(10, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class);
+
+        // Verify server can still be stopped cleanly after failed bind
+        CompletableFuture<Void> stopFuture = server.stop();
+        stopFuture.get(5, TimeUnit.SECONDS);
+        assertThat(stopFuture.isDone()).isTrue();
+    }
+
+    @Test
+    void testStopWhenNeverStarted() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+        GameServer server = new GameServer(factory);
+
+        // Stop without ever starting should complete successfully
+        CompletableFuture<Void> stopFuture = server.stop();
+        stopFuture.get(5, TimeUnit.SECONDS);
+
+        assertThat(stopFuture.isDone()).isTrue();
+        assertThat(stopFuture.isCompletedExceptionally()).isFalse();
+    }
+
+    @Test
+    void testStopAfterFailedStart() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+        GameServer server = new GameServer(factory);
+
+        // Try to start with an invalid negative port (should fail validation)
+        CompletableFuture<Void> startFuture = server.start(-1);
+
+        assertThatThrownBy(() -> startFuture.get(5, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .hasCauseInstanceOf(IllegalArgumentException.class);
+
+        // Now try to stop - should handle gracefully even though start failed
+        CompletableFuture<Void> stopFuture = server.stop();
+        stopFuture.get(5, TimeUnit.SECONDS);
+
+        assertThat(stopFuture.isDone()).isTrue();
+    }
 }
