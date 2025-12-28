@@ -26,10 +26,10 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
-      - name: ☕ Set up JDK 25
+      - name: ☕ Set up JDK 25 (Early Access)
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: '25-ea'
           distribution: 'temurin'
           cache: 'maven'
 

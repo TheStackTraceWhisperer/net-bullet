@@ -3,11 +3,17 @@
 **Status:** DRAFT
 **Owner:** @PrincipalArchitect
 **Target:** `net-bullet` Kernel
+**Runtime:** Java 25 (MANDATORY)
 
 ## 1. Executive Summary
 The objective of Phase 1 is to establish the high-performance networking foundation for the game server. We will implement a specialized Netty transport layer that automatically selects the optimal I/O mechanism (Epoll for Linux/Prod, NIO for Mac/Windows/Dev) without code changes.
 
 This phase transforms the empty project into a listening TCP server that passes all strict quality gates (SpotBugs, Checkstyle, PMD).
+
+### Prerequisites
+- **Java 25** (strictly enforced by maven-enforcer-plugin)
+- Maven 3.9.9 or higher
+- See [SETUP.md](../SETUP.md) for detailed installation instructions
 
 ## 2. Architecture & Components
 
