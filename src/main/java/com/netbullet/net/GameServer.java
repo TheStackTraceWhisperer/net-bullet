@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The core TCP Game Server. Manages the Netty lifecycle and binds to the
  * network port.
+ *
  * <p>
  * <strong>Thread Safety:</strong> This class uses {@link ReentrantLock} for
  * state management to ensure compatibility with Java virtual threads. The
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  * thread-safe. However, it is recommended that lifecycle methods (start/stop)
  * be called from a single coordinating thread or with external synchronization
  * to ensure predictable behavior.
+ *
  * <p>
  * <strong>Resource Management:</strong> This class implements
  * {@link AutoCloseable} and ensures proper cleanup of Netty resources in all
@@ -56,6 +58,7 @@ public final class GameServer implements AutoCloseable {
 
     /**
      * Starts the server on the specified port.
+     *
      * <p>
      * The returned future completes successfully once the underlying Netty server
      * channel has been bound. If binding fails for any reason (for example, the
@@ -63,6 +66,7 @@ public final class GameServer implements AutoCloseable {
      * 80/443/22, or the process lacks sufficient permissions), the future is
      * completed exceptionally with the cause reported by Netty and the server
      * remains stopped. EventLoopGroups are automatically cleaned up on failure.
+     *
      * <p>
      * This method is not idempotent and is intended to be called at most once per
      * {@code GameServer} instance. Concurrent or repeated invocations are not
@@ -130,7 +134,8 @@ public final class GameServer implements AutoCloseable {
                     Throwable cause = future.cause();
                     if (port > 0 && port < 1024) {
                         LOG.error(
-                                "Failed to bind port {} - this privileged port may require elevated permissions (e.g., sudo on Unix systems)",
+                                "Failed to bind port {} - this privileged port may "
+                                        + "require elevated permissions (e.g., sudo on Unix systems)",
                                 port, cause);
                     } else {
                         LOG.error("Failed to bind port {} - port may be in use or inaccessible", port, cause);
@@ -176,6 +181,7 @@ public final class GameServer implements AutoCloseable {
 
     /**
      * Stops the server and releases all resources.
+     *
      * <p>
      * This method gracefully shuts down both the boss and worker EventLoopGroups
      * and waits for both to complete before returning. The returned future
@@ -224,11 +230,13 @@ public final class GameServer implements AutoCloseable {
 
     /**
      * Closes the server and releases all resources with a bounded timeout.
+     *
      * <p>
      * This method calls {@code stop()} and waits up to 30 seconds for graceful
      * shutdown to complete. If shutdown does not complete within the timeout, the
      * method returns anyway to prevent indefinite blocking. This ensures
      * {@code close()} has bounded execution time as required for production use.
+     *
      * <p>
      * This method is called automatically when using try-with-resources.
      *

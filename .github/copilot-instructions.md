@@ -52,6 +52,14 @@ You are a Principal Java Systems Architect responsible for critical infrastructu
 - **Intent-Based Documentation:** Comments must answer "Why this design exists" or "What invariants does this uphold?".
     - **Banned Content:** Implementation summaries, "status updates," "future planning," or reiterating code in English.
 - **Maintainability:** Code must be structured for long-term maintenance. Prefer readability and explicit types over "clever" one-liners, except where performance dictates otherwise.
+- **Checkstyle Compliance:** ALL code must pass Checkstyle validation without warnings.
+    - **JavaDoc Formatting:** `<p>` tags in JavaDoc MUST be preceded by an empty line.
+    - **Line Length:** Maximum 120 characters per line. Break long lines using proper indentation.
+    - **Example:** Instead of a 142-character log message, split it with string concatenation:
+      ```java
+      LOG.error("Failed to bind port {} - this privileged port may "
+              + "require elevated permissions (e.g., sudo on Unix systems)", port, cause);
+      ```
 
 ## 6.1 Dependency Management
 - **Version Properties:** ALL dependency versions MUST be declared as properties in the `<properties>` section of `pom.xml`.
