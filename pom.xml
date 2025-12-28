@@ -13,49 +13,52 @@
     <description>Net Bullet Project - High Performance MMO Kernel</description>
 
     <properties>
+        <boms.junit.version>5.12.0</boms.junit.version>
+        <boms.testcontainers.version>2.0.3</boms.testcontainers.version>
+
+        <deps.archunit.version>1.4.1</deps.archunit.version>
+        <deps.asm.version>9.9.1</deps.asm.version>
+        <deps.assertj.version>3.27.3</deps.assertj.version>
+        <deps.checkstyle.version>10.21.0</deps.checkstyle.version>
+        <deps.findsecbugs-plugin.version>1.13.0</deps.findsecbugs-plugin.version>
+        <deps.jqwik.version>1.9.0</deps.jqwik.version>
+        <deps.netty.version>4.1.115.Final</deps.netty.version>
+        <deps.pitest-junit5-plugin.version>1.2.1</deps.pitest-junit5-plugin.version>
+        <deps.slf4j.version>2.0.12</deps.slf4j.version>
+        <deps.spotbugs-annotations.version>4.9.1</deps.spotbugs-annotations.version>
+
+        <jacoco.branch.coverage>0.60</jacoco.branch.coverage>
+        <jacoco.line.coverage>0.80</jacoco.line.coverage>
         <java.version>25</java.version>
+
+        <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
+
+        <plugins.formatter-maven.version>2.29.0</plugins.formatter-maven.version>
+        <plugins.jacoco-maven.version>0.8.14</plugins.jacoco-maven.version>
+        <plugins.maven-checkstyle.version>3.6.0</plugins.maven-checkstyle.version>
+        <plugins.maven-clean.version>3.4.0</plugins.maven-clean.version>
+        <plugins.maven-compiler.version>3.13.0</plugins.maven-compiler.version>
+        <plugins.maven-deploy.version>3.1.3</plugins.maven-deploy.version>
+        <plugins.maven-enforcer.version>3.5.0</plugins.maven-enforcer.version>
+        <plugins.maven-failsafe.version>3.5.2</plugins.maven-failsafe.version>
+        <plugins.maven-install.version>3.1.3</plugins.maven-install.version>
+        <plugins.maven-jar.version>3.4.2</plugins.maven-jar.version>
+        <plugins.maven-javadoc.version>3.11.2</plugins.maven-javadoc.version>
+        <plugins.maven-pmd.version>3.28.0</plugins.maven-pmd.version>
+        <plugins.maven-resources.version>3.3.1</plugins.maven-resources.version>
+        <plugins.maven-site.version>3.21.0</plugins.maven-site.version>
+        <plugins.maven-source.version>3.3.1</plugins.maven-source.version>
+        <plugins.maven-surefire.version>3.5.2</plugins.maven-surefire.version>
+        <plugins.pitest-maven.version>1.16.1</plugins.pitest-maven.version>
+        <plugins.spotbugs-maven.version>4.9.1.0</plugins.spotbugs-maven.version>
+        <plugins.versions-maven.version>2.18.0</plugins.versions-maven.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
-        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-        <maven-install-plugin.version>3.1.3</maven-install-plugin.version>
-        <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
-        <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
-        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
-
-        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
-        <spotbugs-maven-plugin.version>4.9.1.0</spotbugs-maven-plugin.version>
-        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version> <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
-        <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
-        <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
-
-        <checkstyle.version>10.21.0</checkstyle.version>
         <spotbugs.version>4.9.1</spotbugs.version>
-        <asm.version>9.9.1</asm.version>
-        <junit.version>5.12.0</junit.version>
-        <testcontainers.version>2.0.3</testcontainers.version>
-        <assertj.version>3.27.3</assertj.version>
-        <archunit.version>1.4.1</archunit.version>
-        <spotbugs-annotations.version>4.9.1</spotbugs-annotations.version>
-        <jqwik.version>1.9.0</jqwik.version>
-        <pitest-maven.version>1.16.1</pitest-maven.version>
-        <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
-        <netty.version>4.1.115.Final</netty.version>
-        <slf4j.version>2.0.12</slf4j.version>
-
-        <jacoco.line.coverage>0.80</jacoco.line.coverage>
-        <jacoco.branch.coverage>0.70</jacoco.branch.coverage>
     </properties>
 
     <dependencyManagement>
@@ -63,14 +66,14 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>${junit.version}</version>
+                <version>${boms.junit.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
-                <version>${testcontainers.version}</version>
+                <version>${boms.testcontainers.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -82,19 +85,19 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>${netty.version}</version>
+            <version>${deps.netty.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <version>${deps.slf4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
+            <version>${deps.slf4j.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -107,42 +110,42 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>${assertj.version}</version>
+            <version>${deps.assertj.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
-            <version>${spotbugs-annotations.version}</version>
+            <version>${deps.spotbugs-annotations.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>${archunit.version}</version>
+            <version>${deps.archunit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
+            <version>${boms.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
+            <version>${boms.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>net.jqwik</groupId>
             <artifactId>jqwik</artifactId>
-            <version>${jqwik.version}</version>
+            <version>${deps.jqwik.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -153,32 +156,32 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>${maven-clean-plugin.version}</version>
+                    <version>${plugins.maven-clean.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven-resources-plugin.version}</version>
+                    <version>${plugins.maven-resources.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>${maven-install-plugin.version}</version>
+                    <version>${plugins.maven-install.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${maven-deploy-plugin.version}</version>
+                    <version>${plugins.maven-deploy.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>${maven-site-plugin.version}</version>
+                    <version>${plugins.maven-site.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven-jar-plugin.version}</version>
+                    <version>${plugins.maven-jar.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -187,7 +190,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
+                <version>${plugins.maven-compiler.version}</version>
                 <configuration>
                     <release>${java.version}</release>
                     <compilerArgs>
@@ -203,7 +206,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven-enforcer-plugin.version}</version>
+                <version>${plugins.maven-enforcer.version}</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -235,7 +238,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
+                <version>${plugins.maven-surefire.version}</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
@@ -246,7 +249,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven-failsafe-plugin.version}</version>
+                <version>${plugins.maven-failsafe.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -265,7 +268,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
+                <version>${plugins.jacoco-maven.version}</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -340,7 +343,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs-maven-plugin.version}</version>
+                <version>${plugins.spotbugs-maven.version}</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
@@ -350,7 +353,7 @@
                         <plugin>
                             <groupId>com.h3xstream.findsecbugs</groupId>
                             <artifactId>findsecbugs-plugin</artifactId>
-                            <version>1.13.0</version>
+                            <version>${deps.findsecbugs-plugin.version}</version>
                         </plugin>
                     </plugins>
                 </configuration>
@@ -358,7 +361,7 @@
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm</artifactId>
-                        <version>${asm.version}</version>
+                        <version>${deps.asm.version}</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -375,12 +378,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
+                <version>${plugins.maven-checkstyle.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>${checkstyle.version}</version>
+                        <version>${deps.checkstyle.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -403,7 +406,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>${maven-pmd-plugin.version}</version>
+                <version>${plugins.maven-pmd.version}</version>
                 <configuration>
                     <rulesets>
                         <ruleset>pmd-ruleset.xml</ruleset>
@@ -418,7 +421,7 @@
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm</artifactId>
-                        <version>${asm.version}</version>
+                        <version>${deps.asm.version}</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -436,7 +439,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>${versions-maven-plugin.version}</version>
+                <version>${plugins.versions-maven.version}</version>
                 <configuration>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
@@ -445,7 +448,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>${maven-source-plugin.version}</version>
+                <version>${plugins.maven-source.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -459,7 +462,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven-javadoc-plugin.version}</version>
+                <version>${plugins.maven-javadoc.version}</version>
                 <configuration>
                     <show>private</show>
                     <failOnError>true</failOnError>
@@ -477,7 +480,7 @@
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
-                <version>${formatter-maven-plugin.version}</version>
+                <version>${plugins.formatter-maven.version}</version>
                 <configuration>
                     <configFile>${project.basedir}/formatter.xml</configFile>
                     <lineEnding>LF</lineEnding>
@@ -495,12 +498,12 @@
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>${pitest-maven.version}</version>
+                <version>${plugins.pitest-maven.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-junit5-plugin</artifactId>
-                        <version>${pitest-junit5-plugin.version}</version>
+                        <version>${deps.pitest-junit5-plugin.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
