@@ -37,9 +37,10 @@ public final class GameServer implements AutoCloseable {
 
     private final BootstrapFactory bootstrapFactory;
     private final ReentrantLock stateLock = new ReentrantLock();
+    private volatile boolean isStarting = false;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private Channel serverChannel;
+    private volatile Channel serverChannel;
 
     /**
      * Constructs a new GameServer.
@@ -96,6 +97,10 @@ public final class GameServer implements AutoCloseable {
 
         stateLock.lock();
         try {
+            if (isStarting) {
+                throw new IllegalStateException(
+                        "GameServer is already starting; concurrent start() calls are not supported.");
+            }
             if (bossGroup != null || workerGroup != null) {
                 boolean bossActive = bossGroup != null && !bossGroup.isTerminated();
                 boolean workerActive = workerGroup != null && !workerGroup.isTerminated();
@@ -105,6 +110,7 @@ public final class GameServer implements AutoCloseable {
                 }
             }
 
+            isStarting = true;
             this.bossGroup = bootstrapFactory.createEventLoopGroup(1, "boss");
             this.workerGroup = bootstrapFactory.createEventLoopGroup(Runtime.getRuntime().availableProcessors(),
                     "worker");
@@ -129,6 +135,7 @@ public final class GameServer implements AutoCloseable {
                     this.serverChannel = future.channel();
                     InetSocketAddress addr = (InetSocketAddress) serverChannel.localAddress();
                     LOG.info("GameServer started on port: {}", addr.getPort());
+                    isStarting = false;
                     startupFuture.complete(null);
                 } else {
                     Throwable cause = future.cause();
@@ -140,12 +147,14 @@ public final class GameServer implements AutoCloseable {
                     } else {
                         LOG.error("Failed to bind port {} - port may be in use or inaccessible", port, cause);
                     }
+                    isStarting = false;
                     shutdownEventLoopGroupsOnStartFailure();
                     startupFuture.completeExceptionally(cause);
                 }
             });
         } catch (RuntimeException e) {
             LOG.error("Exception while binding to port {}", port, e);
+            isStarting = false;
             shutdownEventLoopGroupsOnStartFailure();
             startupFuture.completeExceptionally(e);
         }

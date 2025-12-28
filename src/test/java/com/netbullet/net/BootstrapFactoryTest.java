@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class BootstrapFactoryTest {
 
     @Test
-    void testCreateEventLoopGroupReturnsNonNull() {
+    void testCreateEventLoopGroupReturnsNonNull() throws Exception {
         BootstrapFactory factory = new BootstrapFactory();
         EventLoopGroup group = factory.createEventLoopGroup(2, "test");
 
@@ -21,7 +21,7 @@ class BootstrapFactoryTest {
         assertThat(group.isShutdown()).isFalse();
 
         // Cleanup
-        group.shutdownGracefully();
+        group.shutdownGracefully().sync();
     }
 
     @Test
@@ -33,7 +33,7 @@ class BootstrapFactoryTest {
     }
 
     @Test
-    void testMultipleEventLoopGroupsHaveDifferentNames() throws InterruptedException {
+    void testMultipleEventLoopGroupsHaveDifferentNames() throws Exception {
         BootstrapFactory factory = new BootstrapFactory();
 
         EventLoopGroup group1 = factory.createEventLoopGroup(1, "worker");
@@ -44,12 +44,12 @@ class BootstrapFactoryTest {
         assertThat(group1).isNotSameAs(group2);
 
         // Cleanup
-        group1.shutdownGracefully();
-        group2.shutdownGracefully();
+        group1.shutdownGracefully().sync();
+        group2.shutdownGracefully().sync();
     }
 
     @Test
-    void testThreadNamingIncrementsCorrectly() throws InterruptedException {
+    void testThreadNamingIncrementsCorrectly() throws Exception {
         BootstrapFactory factory = new BootstrapFactory();
 
         // Create a group that will spawn threads
@@ -64,7 +64,7 @@ class BootstrapFactoryTest {
         }).sync();
 
         // Cleanup
-        group.shutdownGracefully();
+        group.shutdownGracefully().sync();
     }
 
     @Test
@@ -98,7 +98,7 @@ class BootstrapFactoryTest {
     }
 
     @Test
-    void testCreateEventLoopGroupAcceptsMinimumValidThreads() {
+    void testCreateEventLoopGroupAcceptsMinimumValidThreads() throws Exception {
         BootstrapFactory factory = new BootstrapFactory();
         EventLoopGroup group = factory.createEventLoopGroup(1, "test");
 
@@ -106,11 +106,11 @@ class BootstrapFactoryTest {
         assertThat(group.isShutdown()).isFalse();
 
         // Cleanup
-        group.shutdownGracefully();
+        group.shutdownGracefully().sync();
     }
 
     @Test
-    void testCreateEventLoopGroupAcceptsLargeThreadCount() {
+    void testCreateEventLoopGroupAcceptsLargeThreadCount() throws Exception {
         BootstrapFactory factory = new BootstrapFactory();
         EventLoopGroup group = factory.createEventLoopGroup(100, "test");
 
@@ -118,7 +118,7 @@ class BootstrapFactoryTest {
         assertThat(group.isShutdown()).isFalse();
 
         // Cleanup
-        group.shutdownGracefully();
+        group.shutdownGracefully().sync();
     }
 
     @Test
