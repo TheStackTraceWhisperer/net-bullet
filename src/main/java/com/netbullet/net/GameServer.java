@@ -84,9 +84,10 @@ public final class GameServer implements AutoCloseable {
     }
 
     /**
-     * Returns the actual port the server is listening on.
+     * Returns the actual TCP port the server is currently listening on.
      *
-     * @return port number, or -1 if not running
+     * @return the TCP port number if the server is running and bound, or {@code -1}
+     *         if the server has not been started yet or has already been stopped
      */
     public int getPort() {
         if (serverChannel != null && serverChannel.isOpen()) {
