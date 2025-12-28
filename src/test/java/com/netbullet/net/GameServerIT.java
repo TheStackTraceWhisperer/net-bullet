@@ -3,6 +3,8 @@ package com.netbullet.net;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -161,5 +163,124 @@ class GameServerIT {
         assertThatThrownBy(() -> startFuture.get(5, TimeUnit.SECONDS))
                 .isInstanceOf(ExecutionException.class)
                 .hasCauseInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void testPortValidationRejectsNegativePort() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+        GameServer server = new GameServer(factory);
+
+        CompletableFuture<Void> startFuture = server.start(-100);
+
+        assertThatThrownBy(() -> startFuture.get(5, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .hasCauseInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Port must be between 0 and 65535");
+    }
+
+    @Test
+    void testPortValidationRejectsPortAboveMaximum() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+        GameServer server = new GameServer(factory);
+
+        CompletableFuture<Void> startFuture = server.start(65536);
+
+        assertThatThrownBy(() -> startFuture.get(5, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .hasCauseInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Port must be between 0 and 65535");
+    }
+
+    @Test
+    void testNullBootstrapFactoryRejected() {
+        assertThatThrownBy(() -> {
+            new GameServer(null);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("bootstrapFactory cannot be null");
+    }
+
+    @Test
+    void testMultipleStartCallsThrowException() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+        GameServer server = new GameServer(factory);
+
+        server.start(0).get(5, TimeUnit.SECONDS);
+
+        // Try to start again without stopping
+        assertThatThrownBy(() -> {
+            server.start(0);
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("already started");
+    }
+
+    @Test
+    void testBindFailureWhenPortAlreadyInUse() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+
+        // Occupy a port with a regular ServerSocket
+        try (ServerSocket occupiedSocket = new ServerSocket(0)) {
+            int occupiedPort = occupiedSocket.getLocalPort();
+
+            GameServer server = new GameServer(factory);
+            CompletableFuture<Void> startFuture = server.start(occupiedPort);
+
+            // The bind should fail because port is already in use
+            assertThatThrownBy(() -> startFuture.get(5, TimeUnit.SECONDS))
+                    .isInstanceOf(ExecutionException.class)
+                    .hasRootCauseInstanceOf(IOException.class);
+
+            // Verify getPort returns -1 after failed start
+            assertThat(server.getPort()).isEqualTo(-1);
+        }
+    }
+
+    @Test
+    void testCloseWithTimeoutDoesNotBlockIndefinitely() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+        GameServer server = new GameServer(factory);
+
+        server.start(0).get(5, TimeUnit.SECONDS);
+
+        // Close should complete within reasonable time (30 second timeout)
+        long startTime = System.currentTimeMillis();
+        server.close();
+        long duration = System.currentTimeMillis() - startTime;
+
+        // Should complete much faster than 30 seconds in normal case
+        assertThat(duration).isLessThan(30000);
+    }
+
+    @Test
+    void testBothEventLoopGroupsShutdownProperly() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+        GameServer server = new GameServer(factory);
+
+        server.start(0).get(5, TimeUnit.SECONDS);
+
+        CompletableFuture<Void> stopFuture = server.stop();
+        stopFuture.get(10, TimeUnit.SECONDS); // Allow time for both groups to shutdown
+
+        assertThat(stopFuture.isDone()).isTrue();
+        assertThat(stopFuture.isCompletedExceptionally()).isFalse();
+    }
+
+    @Test
+    void testStartWith65535Port() throws Exception {
+        BootstrapFactory factory = new BootstrapFactory();
+
+        try (GameServer server = new GameServer(factory)) {
+            // Port 65535 is valid (upper bound)
+            CompletableFuture<Void> startFuture = server.start(65535);
+
+            // This might fail if port is in use, but should not fail validation
+            try {
+                startFuture.get(5, TimeUnit.SECONDS);
+                int port = server.getPort();
+                assertThat(port).isEqualTo(65535);
+            } catch (ExecutionException e) {
+                // Port might be in use or require privileges, which is acceptable
+                assertThat(e.getCause()).isNotInstanceOf(IllegalArgumentException.class);
+            }
+        }
     }
 }

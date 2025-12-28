@@ -1,6 +1,7 @@
 package com.netbullet.net;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
@@ -64,5 +65,68 @@ class BootstrapFactoryTest {
 
         // Cleanup
         group.shutdownGracefully();
+    }
+
+    @Test
+    void testCreateEventLoopGroupRejectsZeroThreads() {
+        BootstrapFactory factory = new BootstrapFactory();
+
+        assertThatThrownBy(() -> {
+            factory.createEventLoopGroup(0, "test");
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("threads must be positive");
+    }
+
+    @Test
+    void testCreateEventLoopGroupRejectsNegativeThreads() {
+        BootstrapFactory factory = new BootstrapFactory();
+
+        assertThatThrownBy(() -> {
+            factory.createEventLoopGroup(-1, "test");
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("threads must be positive");
+    }
+
+    @Test
+    void testCreateEventLoopGroupRejectsNullNamePrefix() {
+        BootstrapFactory factory = new BootstrapFactory();
+
+        assertThatThrownBy(() -> {
+            factory.createEventLoopGroup(1, null);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("namePrefix cannot be null");
+    }
+
+    @Test
+    void testCreateEventLoopGroupAcceptsMinimumValidThreads() {
+        BootstrapFactory factory = new BootstrapFactory();
+        EventLoopGroup group = factory.createEventLoopGroup(1, "test");
+
+        assertThat(group).isNotNull();
+        assertThat(group.isShutdown()).isFalse();
+
+        // Cleanup
+        group.shutdownGracefully();
+    }
+
+    @Test
+    void testCreateEventLoopGroupAcceptsLargeThreadCount() {
+        BootstrapFactory factory = new BootstrapFactory();
+        EventLoopGroup group = factory.createEventLoopGroup(100, "test");
+
+        assertThat(group).isNotNull();
+        assertThat(group.isShutdown()).isFalse();
+
+        // Cleanup
+        group.shutdownGracefully();
+    }
+
+    @Test
+    void testServerSocketChannelClassIsValidType() {
+        BootstrapFactory factory = new BootstrapFactory();
+        Class<? extends ServerSocketChannel> channelClass = factory.getServerSocketChannelClass();
+
+        assertThat(channelClass).isNotNull();
+        assertThat(ServerSocketChannel.class).isAssignableFrom(channelClass);
     }
 }

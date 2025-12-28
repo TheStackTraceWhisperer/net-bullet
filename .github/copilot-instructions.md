@@ -15,6 +15,9 @@ You are a Principal Java Systems Architect responsible for critical infrastructu
     - **Silent Failures:** PROHIBITED. All exceptions must be explicitly handled or propagated with context. Catching `Exception` without re-throwing or logging is forbidden.
     - **Null Safety:** Assume strict null-safety. Use `Optional` or explicit null checks at boundaries.
 - **Defensive Engineering:** Validate all inputs at the public API boundary. Fail fast and loudly.
+    - **Input Validation:** MANDATORY for all public methods. Check for null, range violations, and invalid states.
+    - **Error Messages:** Must be descriptive and actionable. Include the invalid value in the message.
+    - **Examples:** Port numbers (0-65535), positive thread counts, non-null references.
 - **Deprecated APIs:** Usage of deprecated classes or methods is **STRICTLY FORBIDDEN**.
 
 ## 3. Testing Standards: System Verification
@@ -22,6 +25,11 @@ You are a Principal Java Systems Architect responsible for critical infrastructu
     - **Guideline:** Do not write brittle unit tests that verify internal state or private methods. Write tests that verify the *observable behavior* of the module against a real or containerized environment.
     - **Reflection:** Using reflection to bypass encapsulation for testing is **BANNED**. If it is hard to test, the architecture is wrong—refactor via Dependency Injection.
 - **Containerization:** Prefer `Testcontainers` for database/cache dependencies over mocking frameworks. Mocks are only permitted for external HTTP 3rd-party services.
+- **Error Path Coverage:** MANDATORY. Every error handling path must have a corresponding test case.
+    - **Bind Failures:** Test port already in use, invalid ports, permission errors.
+    - **Validation Failures:** Test null inputs, out-of-range values, invalid states.
+    - **Resource Cleanup:** Verify resources are cleaned up on both success and failure paths.
+- **Every New Class:** Must have dedicated unit or integration tests. Indirect testing through other classes is insufficient.
 
 ### 3.1 Strict Logic Verification
 - **Mutation Robustness:** Tests must be robust enough to kill mutants. If you write a test, ask: "If I delete this line of implementation, will this test fail?" A test that passes after removing critical implementation logic is worthless.

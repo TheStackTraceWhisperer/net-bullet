@@ -20,12 +20,20 @@ public class BootstrapFactory {
      * Creates an EventLoopGroup optimized for the current OS.
      *
      * @param threads
-     *            number of threads in the group
+     *            number of threads in the group (must be positive)
      * @param namePrefix
-     *            prefix for thread names
+     *            prefix for thread names (must not be null)
      * @return the platform-specific EventLoopGroup
+     * @throws IllegalArgumentException
+     *             if threads is not positive or namePrefix is null
      */
     public EventLoopGroup createEventLoopGroup(int threads, String namePrefix) {
+        if (threads <= 0) {
+            throw new IllegalArgumentException("threads must be positive, but was " + threads);
+        }
+        if (namePrefix == null) {
+            throw new IllegalArgumentException("namePrefix cannot be null");
+        }
         ThreadFactory factory = new NamedThreadFactory(namePrefix);
         if (Epoll.isAvailable()) {
             return new EpollEventLoopGroup(threads, factory);
