@@ -19,8 +19,10 @@ public class BootstrapFactory {
     /**
      * Creates an EventLoopGroup optimized for the current OS.
      *
-     * @param threads number of threads in the group
-     * @param namePrefix prefix for thread names
+     * @param threads
+     *            number of threads in the group
+     * @param namePrefix
+     *            prefix for thread names
      * @return the platform-specific EventLoopGroup
      */
     public EventLoopGroup createEventLoopGroup(int threads, String namePrefix) {

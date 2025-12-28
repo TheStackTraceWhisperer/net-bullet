@@ -14,11 +14,11 @@ class GameServerIT {
     @Test
     void testServerLifecycle() throws Exception {
         BootstrapFactory factory = new BootstrapFactory();
-        
+
         try (GameServer server = new GameServer(factory)) {
             // 1. Start on ephemeral port
             server.start(0).get(5, TimeUnit.SECONDS);
-            
+
             int port = server.getPort();
             assertThat(port).isGreaterThan(0);
 
@@ -26,7 +26,7 @@ class GameServerIT {
             try (Socket client = new Socket("localhost", port)) {
                 assertThat(client.isConnected()).isTrue();
             }
-            
+
             // 3. Stop is handled by try-with-resources
         }
     }

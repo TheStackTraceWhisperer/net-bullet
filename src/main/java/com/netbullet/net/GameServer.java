@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The core TCP Game Server.
- * Manages the Netty lifecycle and binds to the network port.
+ * The core TCP Game Server. Manages the Netty lifecycle and binds to the
+ * network port.
  */
 public final class GameServer implements AutoCloseable {
 
@@ -26,7 +26,8 @@ public final class GameServer implements AutoCloseable {
     /**
      * Constructs a new GameServer.
      *
-     * @param bootstrapFactory factory for creating transport objects
+     * @param bootstrapFactory
+     *            factory for creating transport objects
      */
     public GameServer(BootstrapFactory bootstrapFactory) {
         this.bootstrapFactory = bootstrapFactory;
@@ -35,25 +36,25 @@ public final class GameServer implements AutoCloseable {
     /**
      * Starts the server on the specified port.
      *
-     * @param port the TCP port to bind to
+     * @param port
+     *            the TCP port to bind to
      * @return a future that completes when the server is bound
      */
     public CompletableFuture<Void> start(int port) {
-        CompletableFuture<Void> startupFuture = new CompletableFuture<>();
-        
         this.bossGroup = bootstrapFactory.createEventLoopGroup(1, "boss");
         this.workerGroup = bootstrapFactory.createEventLoopGroup(Runtime.getRuntime().availableProcessors(), "worker");
 
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
-            .channel(bootstrapFactory.getServerSocketChannelClass())
-            .childHandler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                protected void initChannel(SocketChannel ch) {
-                    // Pipeline is empty for Phase 1
-                }
-            });
+                .channel(bootstrapFactory.getServerSocketChannelClass())
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) {
+                        // Pipeline is empty for Phase 1
+                    }
+                });
 
+        CompletableFuture<Void> startupFuture = new CompletableFuture<>();
         b.bind(port).addListener((ChannelFuture future) -> {
             if (future.isSuccess()) {
                 this.serverChannel = future.channel();
@@ -89,7 +90,7 @@ public final class GameServer implements AutoCloseable {
     public CompletableFuture<Void> stop() {
         LOG.info("Stopping GameServer...");
         CompletableFuture<Void> shutdownFuture = new CompletableFuture<>();
-        
+
         if (bossGroup != null && workerGroup != null) {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully().addListener(future -> {
