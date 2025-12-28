@@ -6,6 +6,13 @@ package com.netbullet;
 public class Calculator {
 
     /**
+     * Constructs a new Calculator object.
+     */
+    public Calculator() {
+        // Intentionally empty
+    }
+
+    /**
      * Adds two integers.
      *
      * @param a

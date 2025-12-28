@@ -5,107 +5,111 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+  workflow_dispatch: # Allows manual trigger for debugging if needed
+
+# 1. Concurrency: Stop previous runs of the same PR/Branch immediately
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  validate:
+    name: 🛡️ Validate & Verify
     runs-on: ubuntu-latest
+    timeout-minutes: 15 # 2. Safety: Prevent hung processes from burning minutes
     permissions:
       contents: read
       checks: write
       pull-requests: write
+      issues: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 25
-      uses: actions/setup-java@v4
-      with:
-        java-version: '25'
-        distribution: 'temurin'
-        cache: maven
+      - name: ☕ Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
 
-    - name: Build and Test with Maven
-      run: mvn -B clean verify
+      - name: 🏗️ Build & Verify (Strict)
+        run: mvn -B -e clean verify
+        # -B: Batch mode (no colors/progress bars logs)
+        # -e: Show errors immediately
 
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        files: |
-          **/target/surefire-reports/*.xml
-          **/target/failsafe-reports/*.xml
+      # --- Reporting Section ---
 
-    - name: Upload Test Reports
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-reports
-        path: |
-          **/target/surefire-reports/
-          **/target/failsafe-reports/
-          
-    - name: Upload Code Coverage Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: jacoco-report
-        path: target/site/jacoco/
-        
-    - name: Upload Checkstyle Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: checkstyle-report
-        path: target/checkstyle-result.xml
-        
-    - name: Upload PMD Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: pmd-report
-        path: |
-          target/pmd.xml
-          target/cpd.xml
-          
-    - name: Upload SpotBugs Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: spotbugs-report
-        path: target/spotbugsXml.xml
-        
-    - name: Comment Quality Summary on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const fs = require('fs');
-          let comment = '## 🔍 Quality Control Summary\n\n';
-          
-          // Add summary of quality checks
-          comment += '### Checks Performed\n';
-          comment += '- ✅ Checkstyle: Code style enforcement\n';
-          comment += '- ✅ PMD: Code quality analysis\n';
-          comment += '- ✅ SpotBugs: Bug detection\n';
-          comment += '- ✅ JaCoCo: Code coverage measurement\n';
-          comment += '- ✅ Unit Tests: Functional correctness\n';
-          comment += '- ✅ Integration Tests: End-to-end validation\n\n';
-          
-          comment += '### 📊 Reports Available\n';
-          comment += 'Download artifacts from the Actions tab to view detailed reports:\n';
-          comment += '- **Test Results**: Unit and integration test reports\n';
-          comment += '- **Code Coverage**: JaCoCo coverage report\n';
-          comment += '- **Checkstyle**: Code style violations\n';
-          comment += '- **PMD**: Code quality issues\n';
-          comment += '- **SpotBugs**: Potential bugs\n\n';
-          
-          comment += '### 📚 Documentation\n';
-          comment += 'See [QUALITY_METRICS.md](../blob/main/QUALITY_METRICS.md) for details on quality standards.\n';
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
+      - name: 📊 Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() # Run even if compilation/tests fail
+        with:
+          files: |
+            **/target/surefire-reports/*.xml
+            **/target/failsafe-reports/*.xml
+
+      - name: 📦 Archive Quality Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-reports
+          retention-days: 7
+          path: |
+            target/site/jacoco/
+            target/checkstyle-result.xml
+            target/pmd.xml
+            target/cpd.xml
+            target/spotbugsXml.xml
+            target/surefire-reports/
+            target/failsafe-reports/
+
+      - name: 🤖 PR Status Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // 3. Smart Commenting: Update existing comment instead of spamming
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            // Look for a comment previously made by this bot
+            const botComment = comments.find(c => c.user.type === 'Bot' && c.body.includes('## 🔍 Quality Control Summary'));
+            
+            const buildStatus = '${{ job.status }}' === 'success' ? '✅ Passed' : '❌ Failed';
+            
+            const body = `## 🔍 Quality Control Summary
+            **Status:** ${buildStatus}
+            **Workflow:** [View Run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+
+            ### 🛡️ Checks Performed
+            | Check | Description |
+            |---|---|
+            | ✅ Checkstyle | Code style & formatting |
+            | ✅ PMD | Static analysis & best practices |
+            | ✅ SpotBugs | Bug pattern detection |
+            | ✅ JaCoCo | Code coverage (Target: 80% Line) |
+            | ✅ Tests | Unit & Integration testing |
+
+            ### 📊 Reports
+            Artifacts are available in the **Summary** tab of this run (download 'quality-reports').
+            `;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }
