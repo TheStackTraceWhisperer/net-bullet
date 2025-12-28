@@ -42,9 +42,10 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
+          # FIX: Target specific TEST-*.xml pattern to avoid parsing failsafe-summary.xml
           files: |
-            **/target/surefire-reports/*.xml
-            **/target/failsafe-reports/*.xml
+            **/target/surefire-reports/TEST-*.xml
+            **/target/failsafe-reports/TEST-*.xml
 
       - name: 📦 Archive Quality Reports
         uses: actions/upload-artifact@v4
@@ -52,7 +53,7 @@ jobs:
         with:
           name: quality-reports
           retention-days: 7
-          if-no-files-found: ignore # FIX: Prevent upload failure on partial builds
+          if-no-files-found: ignore
           path: |
             target/site/jacoco/
             target/checkstyle-result.xml
