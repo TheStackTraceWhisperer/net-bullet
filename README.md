@@ -2,20 +2,23 @@
 
 A high-quality Java 25 project with industrial-grade quality control and testing infrastructure.
 
-## ⚠️ JAVA 25 REQUIRED
+## ⚠️ JAVA 25 REQUIRED (Early Access Builds Supported)
 
 **This project STRICTLY requires Java 25.** The build will fail on any earlier version.
+
+**Note:** As of December 2024, Java 25 is available as Early Access (EA) builds. Use `25-ea` distribution until GA release.
 
 📚 **[Setup Guide](docs/SETUP.md)** - Complete Java 25 installation instructions for all platforms
 
 ## Prerequisites
 
 - **Java 25 or higher** (MANDATORY - enforced by maven-enforcer-plugin)
+  - Early Access builds: Use `25-ea` from Eclipse Temurin
 - Maven 3.9.9 or higher
 
 Quick verification:
 ```bash
-java -version   # Must show "25"
+java -version   # Must show "25" or "25-ea"
 mvn -version    # Must show Maven 3.9.9+ AND Java version: 25
 ```
 

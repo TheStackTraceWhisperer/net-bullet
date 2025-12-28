@@ -6,13 +6,15 @@
 
 This project **STRICTLY REQUIRES Java 25**. No exceptions.
 
-- **Minimum Version:** Java 25
+- **Minimum Version:** Java 25 (Early Access builds accepted)
 - **Recommended Distribution:** Eclipse Temurin (OpenJDK)
 - **Build Tool:** Maven 3.9.9 or higher
 
 ### Why Java 25?
 
 This project is built with modern Java 25 features and enforces strict version compliance via maven-enforcer-plugin. Using any earlier version will result in build failure.
+
+**Note:** As of December 2024, Java 25 is available as Early Access (EA) builds. The project is configured to work with EA releases until the GA (General Availability) version is released.
 
 ## Installation
 
@@ -23,12 +25,12 @@ This project is built with modern Java 25 features and enforces strict version c
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-# Install Java 25
-sdk install java 25-tem
+# Install Java 25 (Early Access)
+sdk install java 25.ea-tem
 
 # Verify installation
 java -version
-# Should show: openjdk version "25"...
+# Should show: openjdk version "25-ea"...
 ```
 
 The repository includes a `.sdkmanrc` file that will automatically switch to Java 25 when you `cd` into the project directory (with `sdk env`).
@@ -36,16 +38,19 @@ The repository includes a `.sdkmanrc` file that will automatically switch to Jav
 ### Option 2: Manual Installation
 
 #### Windows
-1. Download Java 25 from [Adoptium](https://adoptium.net/)
+1. Download Java 25 EA from [Adoptium](https://adoptium.net/temurin/releases/?version=25) (select Early Access)
 2. Install and set `JAVA_HOME` environment variable
 3. Add `%JAVA_HOME%\bin` to PATH
 4. Verify: `java -version`
 
 #### macOS (Homebrew)
 ```bash
-brew install openjdk@25
-sudo ln -sfn /usr/local/opt/openjdk@25/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-25.jdk
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-25.jdk/Contents/Home
+# Install Java 25 EA
+brew install --cask temurin25
+
+# Verify and set JAVA_HOME
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home
+java -version
 ```
 
 #### Linux (Debian/Ubuntu)

@@ -48,18 +48,20 @@ By adopting Java 25 now, we avoid painful migration work later. The ecosystem is
 This causes the build to **FAIL IMMEDIATELY** if Java 25 is not detected.
 
 ### CI Pipeline
-GitHub Actions explicitly configures Java 25:
+GitHub Actions explicitly configures Java 25 (Early Access until GA):
 ```yaml
-- name: ☕ Set up JDK 25
+- name: ☕ Set up JDK 25 (Early Access)
   uses: actions/setup-java@v4
   with:
-    java-version: '25'
+    java-version: '25-ea'
     distribution: 'temurin'
 ```
 
+**Note:** As of December 2024, Java 25 is in Early Access. The CI uses `25-ea` builds until General Availability.
+
 ### Developer Environment
-- `.java-version` file for jenv/asdf/mise
-- `.sdkmanrc` file for SDKMAN!
+- `.java-version` file for jenv/asdf/mise (contains `25`)
+- `.sdkmanrc` file for SDKMAN! (contains `java=25.ea-tem`)
 - Documentation in [SETUP.md](../SETUP.md)
 
 ## Migration Strategy (For Existing Codebases)
