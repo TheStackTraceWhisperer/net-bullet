@@ -51,7 +51,7 @@
         <plugins.maven-site.version>3.21.0</plugins.maven-site.version>
         <plugins.maven-source.version>3.3.1</plugins.maven-source.version>
         <plugins.maven-surefire.version>3.5.2</plugins.maven-surefire.version>
-        <plugins.pitest-maven.version>1.16.1</plugins.pitest-maven.version>
+        <plugins.pitest-maven.version>1.22.0</plugins.pitest-maven.version>
         <plugins.spotbugs-maven.version>4.9.1.0</plugins.spotbugs-maven.version>
         <plugins.versions-maven.version>2.18.0</plugins.versions-maven.version>
 
