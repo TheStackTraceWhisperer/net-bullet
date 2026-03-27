@@ -69,3 +69,50 @@ classDiagram
 | **Privileged Port** | `PermissionDeniedException` (Ports < 1024) | Propagate exception. Log hint about `sudo`. |
 | **Resource Leak** | `GameServer` garbage collected without `stop()` | (Future) Use `Cleaner` API or Netty `ResourceLeakDetector`. |
 | **Shutdown Hang** | `stop()` called while I/O active | Netty `shutdownGracefully` guarantees 2s quiet period before force kill. |
+
+## 5. Phase 2: Architecture - The ECS Bridge
+To achieve "Industrial Grade" performance, the network layer and the game simulation layer operate in complete isolation, communicating only via concurrent queues.
+
+### 5.1 System Diagram
+```mermaid
+flowchart TD
+    subgraph Netty IO [Netty Worker Thread]
+        A[TCP Socket] --> B[LengthFieldBasedFrameDecoder]
+        B --> C[PacketDecoder]
+        C -->|Translates to Record| D[IngestionHandler]
+    end
+
+    subgraph The Bridge [Concurrent Boundary]
+        E[(MpscArrayQueue / ConcurrentLinkedQueue)]
+    end
+
+    subgraph Simulation [Game Loop Thread]
+        F[Tick Scheduler] --> G[Drain Queue]
+        G --> H[Update Artemis-odb Components]
+        H --> I[world.process()]
+    end
+
+    D -->|Push| E
+    E -->|Poll| G
+```
+
+### 5.2 Component Specifications
+
+#### 5.2.1 Protocol Framing (`com.netbullet.net.codec.FrameDecoder`)
+* **Responsibility:** Reassembling fragmented TCP packets.
+* **Design:** Extends Netty's built-in `LengthFieldBasedFrameDecoder`.
+* **Header Format:** * `Length` (Unsigned Short, 2 bytes): Total length of the payload.
+  * `Packet ID` (Byte, 1 byte): Opcode identifying the message type (e.g., 0x01 = MoveIntent).
+
+#### 5.2.2 Packet Decoder (`com.netbullet.net.codec.PacketDecoder`)
+* **Responsibility:** Converting raw byte buffers into domain objects.
+* **Design:** Extends `ByteToMessageDecoder`. Uses a `switch` statement with Java 25 Pattern Matching on the Packet ID.
+* **Output:** Instantiates pure Java `Record` types (e.g., `public record MoveIntent(int entityId, float dx, float dy) {}`).
+
+#### 5.2.3 Ingestion Handler (`com.netbullet.net.handler.IngestionHandler`)
+* **Responsibility:** Moving the decoded `Record` off the Netty thread and into the game state.
+* **Design:** The final `ChannelInboundHandlerAdapter` in the pipeline. It holds a reference to a `Queue<IntentRecord>`. It calls `queue.offer(record)`. It contains zero logic and no blocking operations.
+
+#### 5.2.4 The Game Loop (`com.netbullet.engine.GameLoop`)
+* **Responsibility:** Running the ECS at a deterministic tick rate.
+* **Design:** A dedicated platform thread (not a virtual thread, as it runs a continuous CPU-bound `while(running)` loop). Every tick, it polls the MPSC queue until empty, applies the intents to the relevant Artemis-odb components (e.g., adding a `VelocityComponent`), and then calls `world.process()`.
