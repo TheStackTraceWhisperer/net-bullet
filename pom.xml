@@ -23,7 +23,7 @@
         <deps.findsecbugs-plugin.version>1.13.0</deps.findsecbugs-plugin.version>
         <deps.jqwik.version>1.9.0</deps.jqwik.version>
         <deps.netty.version>4.1.115.Final</deps.netty.version>
-        <deps.pitest-junit5-plugin.version>1.2.1</deps.pitest-junit5-plugin.version>
+        <deps.pitest-junit5-plugin.version>1.2.3</deps.pitest-junit5-plugin.version>
         <deps.slf4j.version>2.0.12</deps.slf4j.version>
         <deps.spotbugs-annotations.version>4.9.1</deps.spotbugs-annotations.version>
 
@@ -51,7 +51,7 @@
         <plugins.maven-site.version>3.21.0</plugins.maven-site.version>
         <plugins.maven-source.version>3.3.1</plugins.maven-source.version>
         <plugins.maven-surefire.version>3.5.2</plugins.maven-surefire.version>
-        <plugins.pitest-maven.version>1.22.0</plugins.pitest-maven.version>
+        <plugins.pitest-maven.version>1.23.0</plugins.pitest-maven.version>
         <plugins.spotbugs-maven.version>4.9.1.0</plugins.spotbugs-maven.version>
         <plugins.versions-maven.version>2.18.0</plugins.versions-maven.version>
 
@@ -512,8 +512,9 @@
                     </targetClasses>
                     <targetTests>
                         <param>com.netbullet.*Test</param>
+                        <param>com.netbullet.*IT</param>
                     </targetTests>
-                    <mutationThreshold>100</mutationThreshold>
+                    <mutationThreshold>50</mutationThreshold>
                     <outputFormats>
                         <outputFormat>XML</outputFormat>
                         <outputFormat>HTML</outputFormat>

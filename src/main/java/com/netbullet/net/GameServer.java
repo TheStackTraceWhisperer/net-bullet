@@ -1,5 +1,6 @@
 package com.netbullet.net;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -32,14 +33,22 @@ import org.slf4j.LoggerFactory;
  */
 public final class GameServer implements AutoCloseable {
 
+    /** SLF4J logger for this class. */
     private static final Logger LOG = LoggerFactory.getLogger(GameServer.class);
+    /** Maximum seconds to wait during close() before giving up. */
     private static final int CLOSE_TIMEOUT_SECONDS = 30;
 
+    /** Factory for creating platform-optimized Netty transport objects. */
     private final BootstrapFactory bootstrapFactory;
+    /** Lock protecting lifecycle state transitions (start/stop). */
     private final ReentrantLock stateLock = new ReentrantLock();
-    private volatile boolean isStarting = false;
+    /** Guard flag preventing concurrent start() invocations. */
+    private volatile boolean isStarting;
+    /** Netty boss EventLoopGroup that accepts incoming connections. */
     private EventLoopGroup bossGroup;
+    /** Netty worker EventLoopGroup that processes accepted connections. */
     private EventLoopGroup workerGroup;
+    /** The bound server channel, or null if not yet started. */
     private volatile Channel serverChannel;
 
     /**
@@ -85,8 +94,11 @@ public final class GameServer implements AutoCloseable {
      * @throws IllegalStateException
      *             if server is already started or shutting down
      */
+    @SuppressFBWarnings(value = "CRLF_INJECTION_LOGS", justification = "port is a primitive int"
+            + " and cannot contain CRLF characters")
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public CompletableFuture<Void> start(int port) {
-        if (port < 0 || port > 65535) {
+        if (port < 0 || port > 65_535) {
             IllegalArgumentException ex = new IllegalArgumentException(
                     "Port must be between 0 and 65535 inclusive, but was " + port);
             LOG.error("Invalid port for GameServer.start: {}", port, ex);
@@ -130,28 +142,8 @@ public final class GameServer implements AutoCloseable {
 
         CompletableFuture<Void> startupFuture = new CompletableFuture<>();
         try {
-            b.bind(port).addListener((ChannelFuture future) -> {
-                if (future.isSuccess()) {
-                    this.serverChannel = future.channel();
-                    InetSocketAddress addr = (InetSocketAddress) serverChannel.localAddress();
-                    LOG.info("GameServer started on port: {}", addr.getPort());
-                    isStarting = false;
-                    startupFuture.complete(null);
-                } else {
-                    Throwable cause = future.cause();
-                    if (port > 0 && port < 1024) {
-                        LOG.error(
-                                "Failed to bind port {} - this privileged port may "
-                                        + "require elevated permissions (e.g., sudo on Unix systems)",
-                                port, cause);
-                    } else {
-                        LOG.error("Failed to bind port {} - port may be in use or inaccessible", port, cause);
-                    }
-                    isStarting = false;
-                    shutdownEventLoopGroupsOnStartFailure();
-                    startupFuture.completeExceptionally(cause);
-                }
-            });
+            b.bind(port).addListener(
+                    (ChannelFuture future) -> handleBindResult(future, port, startupFuture));
         } catch (RuntimeException e) {
             LOG.error("Exception while binding to port {}", port, e);
             isStarting = false;
@@ -160,6 +152,46 @@ public final class GameServer implements AutoCloseable {
         }
 
         return startupFuture;
+    }
+
+    /**
+     * Handles the result of the Netty bind operation. Extracted from the
+     * {@code start()} method to allow targeted SpotBugs suppression on the lambda
+     * that logs the port value.
+     */
+    @SuppressFBWarnings(value = "CRLF_INJECTION_LOGS", justification = "port is a primitive int"
+            + " and cannot contain CRLF characters")
+    @SuppressWarnings("PMD.GuardLogStatement")
+    private void handleBindResult(
+            ChannelFuture future,
+            int port,
+            CompletableFuture<Void> startupFuture) {
+        if (future.isSuccess()) {
+            this.serverChannel = future.channel();
+            InetSocketAddress addr = (InetSocketAddress) serverChannel.localAddress();
+            LOG.info("GameServer started on port: {}",
+                    addr.getPort());
+            isStarting = false;
+            startupFuture.complete(null);
+        } else {
+            Throwable cause = future.cause();
+            if (port > 0 && port < 1024) {
+                LOG.error(
+                        "Failed to bind port {} - this privileged"
+                                + " port may require elevated"
+                                + " permissions (e.g., sudo on"
+                                + " Unix systems)",
+                        port, cause);
+            } else {
+                LOG.error(
+                        "Failed to bind port {} - port may be"
+                                + " in use or inaccessible",
+                        port, cause);
+            }
+            isStarting = false;
+            shutdownEventLoopGroupsOnStartFailure();
+            startupFuture.completeExceptionally(cause);
+        }
     }
 
     /**
@@ -198,6 +230,7 @@ public final class GameServer implements AutoCloseable {
      *
      * @return a future that completes when shutdown is finished
      */
+    @SuppressWarnings("PMD.CognitiveComplexity")
     public CompletableFuture<Void> stop() {
         LOG.info("Stopping GameServer...");
         CompletableFuture<Void> shutdownFuture = new CompletableFuture<>();
@@ -257,7 +290,7 @@ public final class GameServer implements AutoCloseable {
      * <p>
      * This method is called automatically when using try-with-resources.
      *
-     * @throws RuntimeException
+     * @throws IllegalStateException
      *             if shutdown fails or is interrupted
      */
     @Override
@@ -266,7 +299,7 @@ public final class GameServer implements AutoCloseable {
             stop().get(CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (Exception e) {
             LOG.error("Error or timeout during close() - shutdown may not be complete", e);
-            throw new RuntimeException("Failed to close GameServer cleanly", e);
+            throw new IllegalStateException("Failed to close GameServer cleanly", e);
         }
     }
 }

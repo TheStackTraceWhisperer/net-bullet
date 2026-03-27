@@ -57,7 +57,9 @@ public class BootstrapFactory {
      * Simple thread factory to name Netty threads for easier debugging.
      */
     private static class NamedThreadFactory implements ThreadFactory {
+        /** Thread name prefix used for identification in thread dumps. */
         private final String prefix;
+        /** Monotonically increasing counter for unique thread naming. */
         private final AtomicInteger counter = new AtomicInteger(0);
 
         NamedThreadFactory(String prefix) {
