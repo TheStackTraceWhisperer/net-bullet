@@ -101,7 +101,8 @@ flowchart TD
 #### 5.2.1 Protocol Framing (`com.netbullet.net.codec.FrameDecoder`)
 * **Responsibility:** Reassembling fragmented TCP packets.
 * **Design:** Extends Netty's built-in `LengthFieldBasedFrameDecoder`.
-* **Header Format:** * `Length` (Unsigned Short, 2 bytes): Total length of the payload.
+* **Header Format:**
+  * `Length` (Unsigned Short, 2 bytes): Total length of the payload.
   * `Packet ID` (Byte, 1 byte): Opcode identifying the message type (e.g., 0x01 = MoveIntent).
 
 #### 5.2.2 Packet Decoder (`com.netbullet.net.codec.PacketDecoder`)
